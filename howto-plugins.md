@@ -61,6 +61,8 @@ public:
 
 Agora nós temos a classe que representa o nosso plugin customizado. Com essa classe, a nossa aplicação poderá ler seu nome e imprimir seus dados na tela, como veremos mais a frente.
 
+TODO: Adicionar passo de build
+
 ## Carregando o plugin
 
 Mas ainda tem um problema, como iremos criar o objeto dessa classe? A aplicação não pode criar usando `new CustomPlugin()` porque ela não conhece `CustomPlugin`, então a aplicação precisa fornecer um modo que o plugin consiga retornar sua referencia como `Plugin` e não como `CustomPlugin`. Esse é o maior desafio para carregar uma biblioteca, principalmente se o seu software for multiplataforma. 
@@ -138,8 +140,181 @@ bool DlLoader::openLib()
 }
 ```
 
-E é isto, com isso já é possível carregar uma biblioteca dinâmica. Mas até então não temos uma arquitetura, e é esse o pulo do gato. Para deixar mais bem estruturado e modular, vamos criar um modelo base onde poderemos carregar qualquer plugin em qualquer SO (se aprenderem como carregar em outro SO, claro hehe).
+E é isto, com isso já é possível carregar uma biblioteca dinâmica. Mas até então não temos uma arquitetura, e é aí que entra a mágica. Para deixar mais bem estruturado e modular, precisamos criar uma estrutura basica de criação dos plugis para que eles fiquem disponíveis facilmente e em um tipo funcional, não como `IPlugin`.
 
 ## Modelo básico
 
-TODO
+Então pra criar uma estrutura modular e simples, vamos criar algumas classes/interfaces. Primeiro, vamos criar o `PluginLoader`, que irá fazer o trabalho que fizemos acima com o `DLLoader`. Depois, vamos criar a `PluginFactory`, onde os plugins serão criados, carregados com o `PluginLoader` e transformados em um objeto "externo" usando o `IPluginProxy`. Vamos passar por cada uma detalhadamente.
+
+### _`PluginLoader`_
+Então primeiro vamos definir o `PluginLoader`. O objetivo dessa classe é transformar uma lib fornecida em um objeto utilizável, que será o `IPlugin`. Então teremos:
+
+```
+class PluginLoader
+{
+public:
+    PluginLoader();
+
+    int loadPlugin(const std::string &pluginPath, std::shared_ptr<IPlugin> &plugin);
+```
+
+A implementação nós já fizemos acima em _Carregando utilizando `dlopen`_, se ainda tiver dúvida releia o tópico.
+
+### `PluginFactory`
+
+Para criarmos a `PluginFactory`, precisamos entender como um objeto do tipo `IPlugin` vai se transformar em algo útil para nós, senão todo esse trabalho será em vão já que até então ele serve apenas para ser carregado corretamente.
+Como estamos utilizando C++, vamos fazer todo o trabalho utilizando subclasses e `casts`. A única coisa que precisamos fazer, é tornar a nossa classe `CustomPlugin` subclasse de uma interface que será útil para nossa aplicação. E quem vai saber como fazer essa transformação é o `IPluginProxy`, que será registrado na `PluginFactory`.
+Vamos definí-lo como:
+```
+IPluginProxy
+{
+public:
+    virtual ~IPluginProxy() = 0;
+
+    virtual bool addPlugin(IPlugin *plugin) = 0;
+
+    virtual std::string id() = 0;
+};
+```
+
+>Se não entendeu, não se preocupe. O importante até então é entender que o `IPluginProxy` é uma interface fornecida por nós, que quando implementada e registrada na `PluginFactory`, vira o responsável por transformar esse nosso `IPlugin` um objeto funcional e armazená-lo para uso futuro. Os detalhes de como isso acontece vamos detalhar mais à frente.
+
+Então, o objetivo da `PluginFactory` classe vai ser:
+ * Registrar e manter referencias para `IPluginProxy`;
+ * Carregar um plugin utilizando o `PluginLoader`;
+ * Registrar o objeto `IPlugin` criado pelo `PluginLoader` em seu determinado `IPluginProxy`;
+
+`PluginFactory.hpp`:
+```
+PluginFactory
+{
+private:
+    std::vector<IPluginProxy> _proxies;
+
+    PluginLoader _loader;
+
+public:
+    int createPlugins(const std::vector<std::string> &pluginsPaths);
+
+    std::vector<std::shared_ptr<IPlugin>> plugins() const;
+
+    bool registerProxy(std::shared_ptr<IPluginProxy> proxy);
+
+}
+
+```
+
+`PluginFactory.cpp`
+```
+int PluginFactory::createPlugins(const std::vector<std::string> &pluginsPath)
+{
+    // Go through each directory and try to load. The path should be something
+    // like "foolibpath/libfoo.lib" or "foolibpath/foo.dll" for windows
+    for(const std::string &libPath : pluginsPath) {
+        std::shared_ptr<IPlugin> plugin = nullptr;
+        int rc = _loader.loadPlugin(libPath, plugin);
+        if (rc == 0) {
+            // Now we check if any proxy registered match with the plugin's proxy and
+            // if so, add it to proxy, where the cast will be done and the object will
+            // become available for anyone who has that proxy as a functional object.
+            foreach (IPluginProxy *proxy : _proxies) {
+                If (plugin->proxyId() == proxy->id()) {
+                    proxy.addPlugin(plugin);
+                }
+            }
+        } else {
+            // Throw error
+        }
+    }
+    return rerr;
+}
+
+bool PluginFactory::registerProxy(IPluginProxy *proxy)
+{
+    _proxies.push_back(proxy);
+}
+```
+
+> Note que estamos utilizando o `PluginLoader` como membro direto da `PluginFactory`. Assim, ficamos preso a apenas um tipo de loader. No nosso caso temos apenas o loader para Linux, então caso fossemos acrescentar a funcionalidade para o windows, teríamos que mudar o nosso `PluginLoader` ou alterar a estrutura do `PluginFactory` para suportar mais de um tipo de `PluginLoader`. Para isso, basta fazer o mesmo que fizemos com os `PluginProxy`.
+
+### Criando o Proxy para nossa funcionalidade.
+
+Agora precisamos criar a estrutura que vai transformar nosso `IPlugin` em alguma funcionalidade. Para isso vamos precisar criar uma nova classe, que vai ser uma subclasse de `IPluginProxy`; e uma interface, que será a interface "funcional" da nossa aplicação a qual nosso `CustomPlugin` irá herdar para poder ser transformado de `IPlugin` para essa nova interface.
+Nosso proxy vai se chamar `BarProxy`. O seu papel é transformar objetos do tipo `IPlugin` para o tipo `Bar`(nossa nova interface) e guardar suas referencias para acesso futuro.
+
+Então nosso proxy será definido como:
+```
+#include "Bar.hpp"
+
+class BarProxy : public IPluginProxy
+{
+private:
+    std::vector<Bar*> _loadedPlugins;
+
+public:
+    BarProxy() {}
+    ~BarProxy() {}
+
+    bool addPlugin(Plugin* plugin) override {
+        Bar *barPlugin = dynamic_cast<Bar*>(plugin);
+        if (barPlugin != nullptr) {
+            _loadedPlugins.push_back(barPlugin);
+            return true;
+        }
+        return false;
+    }
+};
+```
+
+e nossa interface `Bar`:
+```
+class Bar
+{
+public:
+    virtual ~Bar() = 0;
+
+    // Implementação obrigatória na subclasse
+    virtual void drawBar() = 0;
+
+   // Implementação opcional.
+   virtual void fooBar() {}
+}
+```
+
+### Adaptando o `CustomPlugin` para a nova estrutura
+
+Agora que criamos a estrutura completa, precisamos adaptar e `CustomPlugin` para a nova estrutura. Basta subclassear de `Bar` e adicionar a implementação dos métodos virtuais.
+```
+class CustomPlugin : public IPlugin, public Bar
+{
+    ...
+
+    void drawBar() override {
+         // ... implementation goes here
+    }
+}
+```
+
+### Buildando
+
+Agora temos tudo pronto. Basta estruturar e ligar tudo pra fazermos o teste:
+
+```
+#include "PluginFactory.hpp"
+#include "BarProxy.hpp"
+
+void main()
+{
+    BarProxy *proxy = new BarProxy();
+    PluginFactory factory;
+    factory.registerProxy(proxy);
+    factory.createPlugins(pluginsPath);
+
+    std::vector<Bar*> bars = proxy.getBars(); // Gets a vector of plugins casted to Bar
+    foreach (Bar *bar: bars) {
+            bar->drawBar();
+    }
+}
+```
+
+TODO: Adicionar passos de build`}``}`

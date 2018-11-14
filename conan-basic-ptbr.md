@@ -2,8 +2,9 @@
 _Tempo de leitura: X_
 ___
 
-Nesse artigo, teremos uma noção do que é o _Conan_, a sua utilização básica e alguns problemas encontrados durante o meu aprendizado ao utilizá-lo. Talvez encontre informações aqui as quais não são detalhadas nem "completas", mas tento indicar sempre que possível o local (links) onde encontrar a resposta. Peço que leiam mais com o intuito de ter um "norte" de onde encontrar as respostas, do que algo detalhado e completo, afinal a [documentação](https://docs.conan.io/en/latest/) encontrada no próprio site do _Conan_ já é bem completa e de lá que tirei a maioria do assunto abordado aqui. Com base nisso, abordo um pouco sobre:
+Nesse artigo, tento trazer uma noção do que é o _Conan_, a sua utilização básica e alguns problemas encontrados durante o meu aprendizado ao utilizá-lo. Talvez encontre informações aqui as quais não são detalhadas nem "completas", mas tento indicar sempre que possível o local (links) onde encontrar a resposta. Peço que leiam mais com o intuito de ter um "norte" de onde encontrar as respostas, do que algo detalhado e completo, afinal a [documentação](https://docs.conan.io/en/latest/) oficial do _Conan_, de onde tirei a maioria do assunto abordado aqui, engloba quase todos os casos básicos.
 
+Abordo um pouco dos seguintes tópicos:
  * O que é o _Conan_
  * O que são os pacotes disponibilizados pelo _Conan_
  * Utilização básica
@@ -24,8 +25,7 @@ ___
 O gerenciador de pacotes já possui duas formas "oficiais" onde os pacotes podem ser recuperados e/ou enviados, que são por meio do _JFrog Artifactory_ e do _JFrog Bintray_ - mas além dessas formas é possível fazer a instalação do _server_ em um computador qualquer para ser utilizado só na intranet[1], por exemplo.
 No _JFrog Bintray_ é onde o principal respositório do conan está localizado, o [_conan center_](https://bintray.com/conan/conan-center). Além dele, outra comunidade chamada [_bincrafters_](https://bintray.com/bincrafters/public-conan) também está sendo de grande ajuda no processo de adaptação de bibliotecas já existentes e muito utilizadas como _Qt_, _boost_ e várias "não tão utilizadas" também. Já com esses dois servidores é muito provavel que as principais bibliotecas que utilizadas estarão disponíveis - e caso não esteja, o processo de criar um pacote para o _Conan_ não é muito difícil, principalmente se a biblioteca utilizar alguma ferramenta que o gerenciador de pacotes já possui.
 
-___
-[1]: Não me aprofundei no assunto sobre como criar um [_server_](https://docs.conan.io/en/latest/uploading_packages/running_your_server.html?highlight=server), ao que tudo indica basta fazer algumas configurações de porta, mas, de novo, não sei a complexidade.
+> [1]: Não me aprofundei no assunto sobre como criar um [_server_](https://docs.conan.io/en/latest/uploading_packages/running_your_server.html?highlight=server), ao que tudo indica basta fazer algumas configurações de porta, mas, de novo, não sei a complexidade.
 
 ### O que são os pacotes disponibilizados pelo _Conan_
 ___
@@ -73,9 +73,8 @@ A interface é bem detalhada e a [documentação](https://docs.conan.io/en/lates
 
 * `conan build DIR [-sf DIR | -if DIR]`: Esse comando também funciona com o `conaninfo.py`, dado as configurações do arquivo ele tenta fazer o build do pacote. É possível especificar o diretório onde está o código utilizando `-sf` e onde estão os arquivos instalados (do próprio _conan_) utilizando `-if`.
 
-___
-[2]: Não que tenha utilizado **muito**...
-[3]: O `conaninfo.txt` não é utilizado para recuperar código ou fazer o build, ele trata apenas das dependências enquanto o `conaninfo.py` trata também das informações de _como_ gerar um pacote para o próprio _conan_.
+> [2]: Isso se você estiver apenas consumindo as dependências do _Conan_ sem "criar muitas raizes" com o gerenciador de pacotes, mas também é possível integrar mais o projeto compilando o projeto diretamente usando `conan build`, por exemplo.
+> [3]: O `conaninfo.txt` não é utilizado para recuperar código ou fazer o build, ele trata apenas das dependências enquanto o `conaninfo.py` trata também das informações de _como_ gerar um pacote para o próprio _conan_.
 
 ### Utilizando _Conan_ no projeto
 ___
@@ -165,7 +164,92 @@ Cada vez que o comando `conan install` é chamado, esse profile `default` é uti
  
 ### Criando pacotes para a utilização no _Conan_
 ___
-TODO
+Para disponibilizar uma biblioteca no _Conan_, precisamos criar um pacote que é, basicamente, descrito pelo arquivo `conaninfo.py`. Esse arquivo, como  dito mais acima, descreve alguns atributos e métodos que o _Conan_ vai ler para realizar as ações. Nesse arquivo é possível disponibilizar algumas informações sobre o pacote (nome, versão, descrição, url...), alguas configurações e opções que serão usadas (como a _default flag_ `shared`), as dependências necessárias e os métodos que o _Conan_ irá chamar pra preparar o código a ser compilado, gerar as configurações necessárias, a compilação e o teste. Como exemplo, vou explicar um pouco da receita criada para gerar o pacote do [`gtest`](https://github.com/bincrafters/conan-gtest/blob/stable/1.8.1/conanfile.py):
+
+```
+class GTestConan(ConanFile):
+    name = "gtest"
+    version = "1.8.1"
+    description = "Google's C++ test framework"
+    url = "http://github.com/bincrafters/conan-gtest"
+    homepage = "https://github.com/google/googletest"
+    ...
+```
+
+Na parte inicial da classe `GtestConan` temos as informações básicas do pacote: `name`, `version`, `description`, etc, que serão utilizados para descrever o pacote. 
+
+
+```
+    exports = ["LICENSE.md"]
+    exports_sources = ["CMakeLists.txt", "FindGTest.cmake.in", "FindGMock.cmake.in"]
+    generators = "cmake"
+    settings = "os", "arch", "compiler", "build_type"
+    options = {"shared": [True, False], "build_gmock": [True, False], "fPIC": [True, False], "no_main": [True, False], "debug_postfix": "ANY"}
+    default_options = {"shared": False, "build_gmock": True, "fPIC": True, "no_main": False, "debug_postfix": 'd'}
+    _source_subfolder = "source_subfolder"
+ ```
+ 
+Pouco mais abaixo temos `export` e `export_sources`, ambos se referem a arquivos empacotados juntos com a receita que serão utilizados ou durante a compilação - como os arquivos `FindGTest.cmake` e `FindGMock.cmake` - ou durante a instalação do projeto. A diferença entre os dois é que o `export` sempre será salvo em _cache_ quando um pacote for instalado, e o `export_sources` somente será exportado caso seja necessário a compilação do pacote - como geralmente já existe um binário pronto poucas vezes eles serão necessários.
+Depois temos as informações necessárias para a compilação/link da biblioteca, como `generators`, `settings`, `options` e `default_options`. Em resumo:
+ * os `generators` como vimos antes, são os geradores que serão necessários para a compilação do pacote, nesse caso o `cmake` resolve;
+ * em `settings` temos os atributos que serão levados em consideração para que seja diferenciado um binário de outro, ou seja, nesse caso temos sistema operacional (`os`), arquitetura (`arch`), compilador (`compiler`) ou o tipo de compilação (`build_type`) - que representa _release_, _debug_ e etc. Caso algum desses atributos mudem, um novo binário deverá ser gerado;
+ * as `options` representam opções disponível para o build da biblioteca em questão. O `gtest` disponibiliza opções como `build_gmock`, caso não precise utilizar o `gmock` basta settar a opção como `false`. Assim como as `settings`, mudando qualquer opção um binário diferente será gerado/recuperado; e 
+ * as `default_options` define os valores iniciais de cada opção. Utilizando o exemplo do `gmock`, ele sempre é compilado por padrão.
+ 
+```
+    ...
+    def config_options(self):
+        if self.settings.os == "Windows":
+            del self.options.fPIC
+        if self.settings.build_type != "Debug":
+            del self.options.debug_postfix
+            
+    def configure(self):
+        if self.settings.os == "Windows":
+            if self.settings.compiler == "Visual Studio" and Version(self.settings.compiler.version.value) <= "12":
+                raise ConanInvalidConfiguration("Google Test {} does not support Visual Studio <= 12".format(self.version))
+
+    def source(self):
+        tools.get("{0}/archive/release-{1}.tar.gz".format(self.homepage, self.version))
+        extracted_dir = "googletest-release-" + self.version
+        os.rename(extracted_dir, self._source_subfolder)
+
+    def build(self):
+        cmake = CMake(self)
+        ...
+        cmake.definitions["BUILD_GMOCK"] = self.options.build_gmock
+        cmake.definitions["GTEST_NO_MAIN"] = self.options.no_main
+        if self.settings.os == "Windows" and self.settings.compiler == "gcc":
+            cmake.definitions["gtest_disable_pthreads"] = True
+        cmake.configure()
+        cmake.build()
+        
+     def package(self):
+        self.copy("LICENSE", dst="licenses", src=self._source_subfolder)
+
+        self.copy("FindGTest.cmake", dst=".", src=".")
+        gtest_include_dir = os.path.join(self._source_subfolder, "googletest", "include")
+        self.copy(pattern="*.h", dst="include", src=gtest_include_dir, keep_path=True)
+        ...
+```
+
+ Em seguida temos os métodos. Neles são definidos como o código da biblioteca será recuperado, como o ambiente será configurado e como o binário será gerado. Como exemplo, segue alguns métodos importantes utilizados para o `gtest`:
+ * `config_options`: chamado **antes** da atribuição dos valores de opções, por isso deve ser usado com cautela. É geralmente utilizado para fazer verificações de compatibilidade entre `settings` e `options`. No caso do `gtest`, por exemplo, a opção `fPIC` é removida caso a plataforma seja `Windows`; e a opção `debug_postix` também é removida caso o `build_type` seja `debug`. Isso quer dizer que caso o usuário queira instalar o `gtest` com a opção `fPIC` no `windows`, um erro será retornado informando que a opção não está disponível. O mesmo acontece com o `debug_postfix` caso esteja em `debug`.
+ 
+ * `configure`: o configure é bem parecido com o `config_options`, mas é chamado logo depois das opções serem atribuidas. Assim, é possível verificar as `options` e `settings` e fazer alguma alteração ou alguma checagem antes de prosseguir pra compilação. No exemplo do `gtest`, caso o compilador seja o `Visual Studio` na versão menor ou igual à 12, um erro é lançado pois não há suporte para essas versões.
+ 
+ * `source`: utilizado para recuperar o código do projeto que deseja empacotar. Não faz muito sentido empacotar o código junto com a receita do _conan_, já que não existe controle de versão. O código pode ser recuperado utilizando `git` (o _conan_ possui uma [ferramenta](https://docs.conan.io/en/latest/reference/tools.html#tools-git) especifica do git) ou fazendo um download de um arquivo comprimido, como feito no `gtest`. Vale constatar que o _conan_ já da uma boa ajuda nesse aspécto utilizando o [`tool.get()`](https://docs.conan.io/en/latest/reference/tools.html#tools-get), ele baixa, valida (caso queira), descomprime e deleta o arquivo comprimido temporário, tudo isso em uma única chamada.
+ 
+ * `build`: compila o código recuperado pelo `source()`, ou o código já disponível no pacote caso exista. Nesse método é onde é feito a configuração do gerador ou das flags de compilação. No caso do `gtest`, é utilizado o `cmake`. O _conan_ disponibiliza uma [ferramente](https://docs.conan.io/en/latest/reference/build_helpers/cmake.html) para facilitar a manipulação do gerador, bastando apenas adicionar as definições como `BUILD_GMOCK`, `GTEST_NO_MAIN` e outras opções relativas à biblioteca em si.
+ 
+ * `package`: por fim, temos o médoto que vai empacotar tudo e disponibilizar para a utilização quando pedirmos para que o _conan_ instale o pacote em questão. Esse método é onde as cópias são feitas do diretório de `build` para o diretório do pacote. Grande parte da cópia é feita utilizando o [`self.copy()`](https://docs.conan.io/en/latest/reference/conanfile/methods.html#package), mas existe também a opção de utilizar o [install do `cmake`](https://docs.conan.io/en/latest/howtos/cmake_install.html#reuse-cmake-install) caso já esteja pronto.
+ 
+#### Workflow
+ Na documentação oficial do _conan_, eles indicam o [método](https://bincrafters.github.io/2018/02/27/Updated-Conan-Package-Flow-1.1/) utilizado pelo _bincrafters_ para o desenvolvimento de pacotes. O método consiste em ir testando partes da receita antes de prosseguir pro próximo passo - _baby steps_. Como boa parte do processo de desenvolvimento de pacotes é "tentativa e erro", quando um passo como o _download_ do código fonte está pronto (que é um passo simples), não precisa ser repetido toda vez que for testar o `build` ou `package`. Para isso, o _conan_ disponibiliza alguns comandos já comentados em _"Utilização básica"_, e outros como `conan create RECIPE_PATH company/branch -k` (`-k` de `--keep-source`) e o mesmo comando com parâmetro `-kb` (`--keep-build`). Esses parâmetros no comando `create` facilita o fluxo reutilizando o mesmo código já baixado pelo `source()` e o mesmo `binário` depois que o `build()` já estiver funcionando. Ou seja, basicamente ele chama o comando `create` pulando alguns passos que já estão prontos.
+ Assim, basta testar utilizando o mesmo comando (`conan create`), acrescentando arâmetros como o `-kb` para pular alguns passos e testar apenas a parte que está desenvolvendo. Finalizando o processo de desenvolvimento do `source()`, `build()` e `package()`, quando o `conan create` estiver funcinando bem, basta focar em criar um mini projeto teste e testar utilizando o comando `conan test TEST_FOLDER package/1.0@user/testing`.
+ Também para facilitar, existe um [projeto exemplo](https://github.com/memsharded/example_conan_flow) disponível no git que é geralmente usado como template.
+ 
+> TODO: Não gostei muito da "didática" usada pra explicar a criação dos pacotes, além disso a parte "principal" que seria o fluxo tá meio incompleta, faltando a parte de teste ainda... Talvez fique muito grande?
 
 ### Problemas (e soluções) ao aplicar _Conan_ em soluções reais
 ___

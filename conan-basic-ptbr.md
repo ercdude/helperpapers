@@ -9,7 +9,7 @@ Abordo um pouco dos seguintes tópicos:
  * O que são os pacotes disponibilizados pelo _Conan_
  * Utilização básica
  * Utilizando _Conan_ no projeto
-   * `conaninfo.txt` e `conaninfo.py`
+   * `conanfile.txt` e `conanfile.py`
    * Profiles
  * Criando pacotes para utilização no _Conan_
  * Conclusão
@@ -28,7 +28,7 @@ No _JFrog Bintray_ é onde o principal respositório do conan está localizado, 
 ### O que são os pacotes disponibilizados pelo _Conan_
 ___
 
-Um pacote no _Conan server_ geralmente é apenas um arquivo de receita (`conaninfo.py` descrito mais abaixo) com algum mini projeto de teste, associado aos seus binários. Cada "pacote binário" (não é necessariamente um binário, pode ser um projeto _header only_) é criado baseado em suas opções e configurações de ambiente. Ou seja, para cada compilador diferente, um novo pacote binário será criado; para cada arquitetura diferente (x86 ou x64) um novo pacote binário será criado; caso você altere alguma configuração (habilitar o `shared`, por exemplo) um novo pacote será criado; e etc. Isso porque o ID de cada pacote binário é o `hash` das informações das configurações (`settings`) e opções (`options`), mudando qualquer parâmetro dentro desse conjunto de informações, um novo binário será construído, estando ou não disponível no repositório onde estão as receitas do _Conan_.
+Um pacote no _Conan server_ geralmente é apenas um arquivo de receita (`conanfile.py` descrito mais abaixo) com algum mini projeto de teste, associado aos seus binários. Cada "pacote binário" (não é necessariamente um binário, pode ser um projeto _header only_) é criado baseado em suas opções e configurações de ambiente. Ou seja, para cada compilador diferente, um novo pacote binário será criado; para cada arquitetura diferente (x86 ou x64) um novo pacote binário será criado; caso você altere alguma configuração (habilitar o `shared`, por exemplo) um novo pacote será criado; e etc. Isso porque o ID de cada pacote binário é o `hash` das informações das configurações (`settings`) e opções (`options`), mudando qualquer parâmetro dentro desse conjunto de informações, um novo binário será construído, estando ou não disponível no repositório onde estão as receitas do _Conan_.
 
 [![N|Solid](https://docs.conan.io/en/latest/_images/binary_mgmt.png)](https://docs.conan.io/en/latest/introduction.html#decentralized-package-manager)
 
@@ -68,28 +68,28 @@ A interface é bem detalhada e a [documentação](https://docs.conan.io/en/lates
     Qt/5.8.0@osechet/testing
     ```
     
-* `conan install DIR [-if DIR]`: O que ele faz, basicamente, é instalar os arquivos necessários para a utilização do conan no diretório atual, baseando-se no arquivo de configuração `conaninfo.txt|py` encontrado no diretório `DIR`. Geralmente a utilização acontece no diretório de build, mas é possível passar `-if [dir]` como parâmetro para direcionar as saídas para um diretório específico. Esse comando é, basicamente, o único utilizado[4] pra _consumir_ do _Conan_ depois que tudo está configurado. Esse comando, além de instalar os arquivos necessários para o build, realiza o download dos binários e/ou o código do pacote desejado para que o build seja realizado, salvando-os em _cache_ para caso algum outro projeto também precise, assim não há necessidade de solicitar pro servidor uma segunda vez se as configurações forem as mesmas.
+* `conan install DIR [-if DIR]`: O que ele faz, basicamente, é instalar os arquivos necessários para a utilização do conan no diretório atual, baseando-se no arquivo de configuração `conanfile.txt|py` encontrado no diretório `DIR`. Geralmente a utilização acontece no diretório de build, mas é possível passar `-if [dir]` como parâmetro para direcionar as saídas para um diretório específico. Esse comando é, basicamente, o único utilizado[4] pra _consumir_ do _Conan_ depois que tudo está configurado. Esse comando, além de instalar os arquivos necessários para o build, realiza o download dos binários e/ou o código do pacote desejado para que o build seja realizado, salvando-os em _cache_ para caso algum outro projeto também precise, assim não há necessidade de solicitar pro servidor uma segunda vez se as configurações forem as mesmas.
 
-* `conan source DIR [-sf DIR]`: Esse comando acessa as configurações do arquivo `conaninfo.py`[5] e recupera o código do projeto. É utilizado mais como teste para verificar se o código está sendo recuperado corretamente sem que os outros passos (configuração, build, teste, etc...) sejam processados. Assim como o `-if` do `install`, o `-sf` indica o diretório em que o código será colocado.
+* `conan source DIR [-sf DIR]`: Esse comando acessa as configurações do arquivo `conanfile.py`[5] e recupera o código do projeto. É utilizado mais como teste para verificar se o código está sendo recuperado corretamente sem que os outros passos (configuração, build, teste, etc...) sejam processados. Assim como o `-if` do `install`, o `-sf` indica o diretório em que o código será colocado.
 
-* `conan build DIR [-sf DIR | -if DIR]`: Esse comando também funciona com o `conaninfo.py`, dado as configurações do arquivo ele tenta fazer o build do pacote. É possível especificar o diretório onde está o código utilizando `-sf` e onde estão os arquivos instalados[6] (do próprio _conan_) utilizando `-if`.
+* `conan build DIR [-sf DIR | -if DIR]`: Esse comando também funciona com o `conanfile.py`, dado as configurações do arquivo ele tenta fazer o build do pacote. É possível especificar o diretório onde está o código utilizando `-sf` e onde estão os arquivos instalados[6] (do próprio _conan_) utilizando `-if`.
 
 > [4]: Isso se você estiver apenas consumindo as dependências do _Conan_ sem "criar muitas raizes" com o gerenciador de pacotes, mas também é possível integrar mais o projeto compilando o projeto diretamente usando `conan build`, por exemplo.
 
-> [5]: O `conaninfo.txt` não é utilizado para recuperar código ou fazer o build, ele trata apenas das dependências enquanto o `conaninfo.py` trata também das informações de _como_ gerar um pacote para o próprio _conan_.
+> [5]: O `conanfile.txt` não é utilizado para recuperar código ou fazer o build, ele trata apenas das dependências enquanto o `conanfile.py` trata também das informações de _como_ gerar um pacote para o próprio _conan_.
 
 > [6]: Esses arquivos geralmente são utilizados pelos `generators` (`.cmake` é um deles) pra recuperar todas as informações necessárias da biblioteca, como o diretório da biblioteca, o diretório de `include`, etc.
 
 ### Utilizando _Conan_ no projeto
 ___
-Para que o _Conan_ saiba exatamente qual o binário compatível com o seu projeto/máquina, é necessário que exista um arquivo chamado `conaninfo.txt` ou `conaninfo.py` ditando as opções e configurações dos pacotes necessários para o projeto. Além dessas informações, um outro arquivo de _profile_ é levado em consideração para ditar informações sobre o ambiente ao qual o projeto será compilado - sistema operacional, compilador, arquitetura, etc.
+Para que o _Conan_ saiba exatamente qual o binário compatível com o seu projeto/máquina, é necessário que exista um arquivo chamado `conanfile.txt` ou `conanfile.py` ditando as opções e configurações dos pacotes necessários para o projeto. Além dessas informações, um outro arquivo de _profile_ é levado em consideração para ditar informações sobre o ambiente ao qual o projeto será compilado - sistema operacional, compilador, arquitetura, etc.
 
-#### `conaninfo.txt` e `conaninfo.py`
-Os arquivos _conaninfo_ são utilizados pra definir configurações de como os pacotes desejados devem ser entregues. A diferença entre os dois é que o `conaninfo.txt` é mais básico, possui informações apenas sobre como os pacotes serão baixados e _linkados_ à aplicação. Já o `conaninfo.py`, além de conter informações dos pacotes, também pode conter informações para **gerar** um pacote, além da possibilidade de incluir rotinas usando _python_ e as ferramentas já fornecidas pelo _Conan_.
+#### `conanfile.txt` e `conanfile.py`
+Os arquivos _conanfile_ são utilizados pra definir configurações de como os pacotes desejados devem ser entregues. A diferença entre os dois é que o `conanfile.txt` é mais básico, possui informações apenas sobre como os pacotes serão baixados e _linkados_ à aplicação. Já o `conanfile.py`, além de conter informações dos pacotes, também pode conter informações para **gerar** um pacote, além da possibilidade de incluir rotinas usando _python_ e as ferramentas já fornecidas pelo _Conan_.
 
- * [`conaninfo.txt`](https://docs.conan.io/en/latest/reference/conanfile_txt.html): É um arquivo simples contendo algumas informações como `requires`, `generators` e `options`. Com essas informações, o _Conan_ verifica as dependências exigidas em `requires`, fornece as informações com base nos `generators` escolhidos e os binários de acordo com as `options` fornecidas. No arquivo abaixo temos um exemplo de uma aplicação utilizando `gtest`, `Qt` e `libzip`.
+ * [`conanfile.txt`](https://docs.conan.io/en/latest/reference/conanfile_txt.html): É um arquivo simples contendo algumas informações como `requires`, `generators` e `options`. Com essas informações, o _Conan_ verifica as dependências exigidas em `requires`, fornece as informações com base nos `generators` escolhidos e os binários de acordo com as `options` fornecidas. No arquivo abaixo temos um exemplo de uma aplicação utilizando `gtest`, `Qt` e `libzip`.
  
-    _conaninfo.txt_
+    _conanfile.txt_
     ```
     [requires]
     gtest/1.7.0@bincrafters/stable
@@ -105,12 +105,12 @@ Os arquivos _conaninfo_ são utilizados pra definir configurações de como os p
 
     ```
  
-     Ao executar um `conan install` com as configurações do nosso arquivo `conaninfo.txt`, o _Conan_ vai verificar se os pacotes desejados (`gtest`, `Qt` e `libzip`) existem e, caso não encontre no meu _cache_ local, fará o download. Depois de resolver a "instalação" das dependências, o _Conan_ vai gerar os arquivos necessários para a integração no projeto de acordo com o(s) seu(s) `generators`, no nosso caso o `CMake`. Nas `options` temos `gtest:shared=True` e `Qt:shared=True`, o que quer dizer que queremos que o `Qt` e o `gtest` sejam utilizados como _dynamic (shared) libraries_.
+     Ao executar um `conan install` com as configurações do nosso arquivo `conanfile.txt`, o _Conan_ vai verificar se os pacotes desejados (`gtest`, `Qt` e `libzip`) existem e, caso não encontre no meu _cache_ local, fará o download. Depois de resolver a "instalação" das dependências, o _Conan_ vai gerar os arquivos necessários para a integração no projeto de acordo com o(s) seu(s) `generators`, no nosso caso o `CMake`. Nas `options` temos `gtest:shared=True` e `Qt:shared=True`, o que quer dizer que queremos que o `Qt` e o `gtest` sejam utilizados como _dynamic (shared) libraries_.
  
 
- * [`conaninfo.py`](https://docs.conan.io/en/latest/reference/conanfile.html): É um arquivo mais complexo que o `conaninfo.txt`, mas que possui maior gama de controles que podem ser utilizados com o _Conan_. Geralmente é mais utilizado para o empacotamento do projeto, mas para o consumo também possui algumas vantagens em comparação ao `conaninfo.txt`, como próprias funções do `python`. Como exemplo, vamos utilizar as mesmas dependências acima e com algumas funções a mais para facilitar o build.
+ * [`conanfile.py`](https://docs.conan.io/en/latest/reference/conanfile.html): É um arquivo mais complexo que o `conanfile.txt`, mas que possui maior gama de controles que podem ser utilizados com o _Conan_. Geralmente é mais utilizado para o empacotamento do projeto, mas para o consumo também possui algumas vantagens em comparação ao `conanfile.txt`, como próprias funções do `python`. Como exemplo, vamos utilizar as mesmas dependências acima e com algumas funções a mais para facilitar o build.
  
-   _conaninfo.py_
+   _conanfile.py_
    ```
    from conans import ConanFile, CMake
 
@@ -132,7 +132,7 @@ Os arquivos _conaninfo_ são utilizados pra definir configurações de como os p
            cmake.build()
    ```
 
-    O nosso `conaninfo.py` funciona basicamente da mesma forma que o `conaninfo.txt` acima, com 2 diferenças encontradas nos métodos `imports` e `build`. O `imports` também é possível ser utilizado no `txt`, o que ele faz, nesse caso, é copiar todas as `*.dll` e `*.dylib` para a pasta `bin`. Já o método `build` é específico do arquivo `.py`, ele possibilita que você possa chamar o `conan build` para compilar o seu projeto, sem a necessidade de chamar o `cmake`. Por exemplo, nesse caso bastaria chamar `conan install .. && conan build ..` para que meu projeto seja compilado, sem a necessidade de chamar `cmake ..`.
+    O nosso `conanfile.py` funciona basicamente da mesma forma que o `conanfile.txt` acima, com 2 diferenças encontradas nos métodos `imports` e `build`. O `imports` também é possível ser utilizado no `txt`, o que ele faz, nesse caso, é copiar todas as `*.dll` e `*.dylib` para a pasta `bin`. Já o método `build` é específico do arquivo `.py`, ele possibilita que você possa chamar o `conan build` para compilar o seu projeto, sem a necessidade de chamar o `cmake`. Por exemplo, nesse caso bastaria chamar `conan install .. && conan build ..` para que meu projeto seja compilado, sem a necessidade de chamar `cmake ..`.
     
 #### Profile
 O arquivo de [_profile_](https://docs.conan.io/en/latest/using_packages/using_profiles.html#) pode ser utilizado de duas formas: como _profile_ local da máquina, se encontra geralmente em `~/.conan/profile/`; ou como um _profile_ localizado em qualquer lugar do disco, como na raiz do projeto como exemplificado abaixo. Esse arquivo de _profile_ é um arquivo texto que irá definir algumas configurações relacionadas ao seu ambiente de compilação para recuperar ou compilar os binários certos, que sejam compatíveis com seu projeto.
@@ -168,7 +168,7 @@ Cada vez que o comando `conan install` é chamado, esse profile `default` é uti
  
 ### Criando pacotes para a utilização no _Conan_
 ___
-Para disponibilizar uma biblioteca no _Conan_, precisamos criar um pacote que é, basicamente, descrito pelo arquivo `conaninfo.py`. Esse arquivo, como  dito mais acima, descreve alguns atributos e métodos que o _Conan_ vai ler para realizar as ações. Nesse arquivo é possível disponibilizar algumas informações sobre o pacote (nome, versão, descrição, url...), algumas configurações e opções que serão usadas (como a _default flag_ `shared`), as dependências necessárias e os métodos que o _Conan_ irá chamar pra preparar o código a ser compilado, gerar as configurações necessárias, a compilação e o teste. 
+Para disponibilizar uma biblioteca no _Conan_, precisamos criar um pacote que é, basicamente, descrito pelo arquivo `conanfile.py`. Esse arquivo, como  dito mais acima, descreve alguns atributos e métodos que o _Conan_ vai ler para realizar as ações. Nesse arquivo é possível disponibilizar algumas informações sobre o pacote (nome, versão, descrição, url...), algumas configurações e opções que serão usadas (como a _default flag_ `shared`), as dependências necessárias e os métodos que o _Conan_ irá chamar pra preparar o código a ser compilado, gerar as configurações necessárias, a compilação e o teste. 
 
 #### Workflow
  Na documentação oficial do _conan_, eles indicam o [método](https://bincrafters.github.io/2018/02/27/Updated-Conan-Package-Flow-1.1/) utilizado pelo _bincrafters_ para o desenvolvimento de pacotes. O método consiste em ir testando partes da receita antes de prosseguir pro próximo passo - estilo _baby steps_. Como boa parte do processo de desenvolvimento de pacotes é "tentativa e erro", quando um passo como o _download_ do código fonte está pronto (que é um passo simples), não precisa ser repetido toda vez que for testar o `build` ou `package`. Para isso, o _conan_ disponibiliza alguns comandos, já comentados em _"Utilização básica"_, como `conan create RECIPE_PATH company/branch -k` (`-k` de `--keep-source`) e o mesmo comando com parâmetro `-kb` (`--keep-build`). Esses parâmetros no comando `create` facilita o fluxo reutilizando o mesmo código já baixado pelo `source()` e o mesmo `binário` depois que o `build()` já estiver funcionando. Ou seja, basicamente ele chama o comando `create` pulando alguns passos que já estão prontos.
@@ -176,8 +176,8 @@ Para disponibilizar uma biblioteca no _Conan_, precisamos criar um pacote que é
  Assim, basta testar utilizando o mesmo comando (`conan create`), acrescentando parâmetros como o `-kb` para pular alguns passos e testar apenas a parte que está desenvolvendo. Finalizando o processo de desenvolvimento do `source()`, `build()` e `package()`, quando o `conan create` estiver funcinando bem, basta focar em criar um mini projeto teste e testar utilizando o comando `conan test TEST_FOLDER package/1.0@user/testing`.
  Também para facilitar, existe um [projeto exemplo](https://github.com/memsharded/example_conan_flow) disponível no git que geralmente é usado como template na criação de novos pacotes.
 
-#### O que fazer no `conaninfo.py`
-Para que o _workflow_ funcione, é preciso, obviamente, de um `conaninfo.py` funcional. Como exemplo, vou explicar um pouco da receita criada para gerar o pacote do [`gtest`](https://github.com/bincrafters/conan-gtest/blob/stable/1.8.1/conanfile.py). Não é uma receita complexa, embora possua alguns detalhes relacionado ao `CMake` que não vamos explorar aqui, e possui todos os métodos necessários para um `conanfile.py` funcional.
+#### O que fazer no `conanfile.py`
+Para que o _workflow_ funcione, é preciso, obviamente, de um `conanfile.py` funcional. Como exemplo, vou explicar um pouco da receita criada para gerar o pacote do [`gtest`](https://github.com/bincrafters/conan-gtest/blob/stable/1.8.1/conanfile.py). Não é uma receita complexa, embora possua alguns detalhes relacionado ao `CMake` que não vamos explorar aqui, e possui todos os métodos necessários para um `conanfile.py` funcional.
 
 O pacote do `gtest` funciona com um `CMakeLists` criado como [_wrapper_](https://github.com/bincrafters/conan-gtest/blob/stable/1.8.1/CMakeLists.txt) que adciona o `CMakeLists` original da biblioteca como `subfolder`. Assim, é possível fazer toda a configuração necessária com base no projeto principal sem alterar nada do `CMakeLists.txt` da biblioteca - por esse motivo existem os arquivos de configuração `FindGTest.cmake.in` e `FindGMock.cmake.in` que serão ignorados por enquanto.
 

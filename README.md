@@ -1,3 +1,3 @@
 This repository is used tutorials or helper papers created by me.
 
-* Conan, the Package Manager ([en](conan-basic-en.md), [pt](conan-basic-pt.md))
+ * Conan, a Package Manager for C++ ([pt-br](conan-basic-ptbr.md), [en](conan-basic-en.md))

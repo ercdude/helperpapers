@@ -85,7 +85,6 @@ A interface é bem detalhada e a [documentação](https://docs.conan.io/en/lates
 ___
 Para que o _Conan_ saiba exatamente qual o binário compatível com o seu projeto/máquina, é necessário que exista um arquivo chamado `conanfile.txt` ou `conanfile.py` ditando as opções e configurações dos pacotes necessários para o projeto. Além dessas informações, um outro arquivo de _profile_ é levado em consideração para ditar informações sobre o ambiente ao qual o projeto será compilado - sistema operacional, compilador, arquitetura, etc.
 
-#### `conanfile.txt` e `conanfile.py`
 Os arquivos _conanfile_ são utilizados pra definir configurações de como os pacotes desejados devem ser entregues. A diferença entre os dois é que o `conanfile.txt` é mais básico, possui informações apenas sobre como e quais os pacotes serão baixados e _linkados_ à aplicação. Já o `conanfile.py`, além de conter informações dos pacotes, também pode conter informações para **gerar** um pacote, além da possibilidade de incluir rotinas usando _python_ e as ferramentas já fornecidas pelo _Conan_.
 
  * [`conanfile.txt`](https://docs.conan.io/en/latest/reference/conanfile_txt.html): É um arquivo simples contendo algumas informações como `requires`, `generators`, `options`. Com essas informações, o _Conan_ verifica as dependências exigidas em `requires`, fornece as informações com base nos `generators` escolhidos e os binários de acordo com as `options` fornecidas. No arquivo abaixo temos um exemplo de uma aplicação utilizando `gtest`, `Qt` e `libzip`.

@@ -11,7 +11,7 @@ A bit of the following topics will be approached:
  * What packages are provided by _Conan_
  * Its basic uses
  * How to utilize Conan in the project:
-   * `conaninfo.txt` e `conaninfo.py`
+   * `conanfile.txt` e `conanfile.py`
    * Profiles
  * Creating packages to use in _Conan_
  * Conclusion
@@ -29,7 +29,7 @@ The pack manager already has two "official" ways to recover and/or send the pack
 ### What packages are provided by _Conan_
 ___
 
-A pack in the Conan Server is, usually, just a recipe file  (`conaninfo.py` described below)  with some mini project as a test, associated to its binaries. Each "binary package" (not necessarily a binary, could be a _header only_ library) is made based on its enviroment options and settings. In other words, to each different compiler, a new binary package will be made; to each different architecture (x84 or x64) a new binary package will be made; in case you change any options (enabling the `shared`, for example) a new package will be made; and etc. This happens because the ID of each binary package is the `hash` of the settings and options informations, changed any parameter within this information set, a new binary will be used, available or not in the repository where the conan recipes are located.
+A pack in the Conan Server is, usually, just a recipe file  (`conanfile.py` described below)  with some mini project as a test, associated to its binaries. Each "binary package" (not necessarily a binary, could be a _header only_ library) is made based on its enviroment options and settings. In other words, to each different compiler, a new binary package will be made; to each different architecture (x84 or x64) a new binary package will be made; in case you change any options (enabling the `shared`, for example) a new package will be made; and etc. This happens because the ID of each binary package is the `hash` of the settings and options informations, changed any parameter within this information set, a new binary will be used, available or not in the repository where the conan recipes are located.
 
 [![N|Solid](https://docs.conan.io/en/latest/_images/binary_mgmt.png)](https://docs.conan.io/en/latest/introduction.html#decentralized-package-manager)
 
@@ -69,11 +69,11 @@ The interface is very detailed and the  [documentation](https://docs.conan.io/en
     Qt/5.8.0@osechet/testing
     ```
     
-* `conan install DIR [-if DIR]`: Basically this command installs the necessary files for conan's utilizations in the actual directory, based on the setting file `conaninfo.txt|py` found in the directoty `DIR`. Usually its usages happens in the build directory, but it's possible to use `-if [dir]` as a parameter to direct the exits to a specific directory. Basically this command is the only one used[4] to _consume_ from _Conan_ after everything is already configured. Besides installing the the necessary files for building, this command performs the download of the binaries and/or package codes desired for the acomplishment of the build, saving them in _cache_ in case another project needs it, this way there is no need to request a second time to the server if the settings are the same.
+* `conan install DIR [-if DIR]`: Basically this command installs the necessary files for conan's utilizations in the actual directory, based on the setting file `conanfile.txt|py` found in the directoty `DIR`. Usually its usages happens in the build directory, but it's possible to use `-if [dir]` as a parameter to direct the exits to a specific directory. Basically this command is the only one used[4] to _consume_ from _Conan_ after everything is already configured. Besides installing the the necessary files for building, this command performs the download of the binaries and/or package codes desired for the acomplishment of the build, saving them in _cache_ in case another project needs it, this way there is no need to request a second time to the server if the settings are the same.
 
-* `conan source DIR [-sf DIR]`: This command access the file `conaninfo.py`[5] settings and recover the project's code. It's usually used as a test to check if the code is being correctly recovered without processing the other steps (setting, build, test, etc...). Just as the `-if` from the `install`, the `-sf` shows the directory in which the source code will be placed.
+* `conan source DIR [-sf DIR]`: This command access the file `conanfile.py`[5] settings and recover the project's code. It's usually used as a test to check if the code is being correctly recovered without processing the other steps (setting, build, test, etc...). Just as the `-if` from the `install`, the `-sf` shows the directory in which the source code will be placed.
 
-* `conan build DIR [-sf DIR | -if DIR]`: this command also works with the `conaninfo.py`, given the file's settings it tries to make the package build. It is possible to specify the directory of the source code using `-sf`and where are the installed files[6] (from _conan_) using `-if`
+* `conan build DIR [-sf DIR | -if DIR]`: this command also works with the `conanfile.py`, given the file's settings it tries to make the package build. It is possible to specify the directory of the source code using `-sf`and where are the installed files[6] (from _conan_) using `-if`
 
 > [4]: Only aplies if you're consuming Conan's dependencies without "creating too many roots" with the package manager, but it is also possible to integrate the project even more directly compiling it by using `conan build`, for example.
 

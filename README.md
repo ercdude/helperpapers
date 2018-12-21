@@ -1,4 +1,4 @@
-This repository is used tutorials or helper papers created by me.
+This repository is used tutorials or helper papers created/recommended by me.
 
  * [Good links](links.md)
 

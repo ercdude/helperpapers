@@ -1,4 +1,4 @@
-This repository is used tutorials or helper papers created/recommended by me.
+# My links!
 
  * Conan, a Package Manager for C++ ([pt-br](conan-basic-ptbr.md), [en](conan-basic-en.md))
 
@@ -28,13 +28,19 @@ Probably C++ related!
 
 * [Auto and decltype explained](http://thbecker.net/articles/auto_and_decltype/section_01.html)
 
-## Others
+## Operating Systems
 
 * [Nand to Tetris, build a modern computer from first principles](https://www.nand2tetris.org/)
-* [Free Programming Books](https://github.com/EbookFoundation/free-programming-books)
-* [Polybar, a status bar for i3](https://github.com/jaagr/polybar)*
-* [MpsYoutube, a terminal based program to Youtube](https://github.com/mps-youtube/mps-youtube)*
+* [Baking Pi - Operating Systems Dev](https://www.cl.cam.ac.uk/projects/raspberrypi/tutorials/os/)*
+
+## Useful Applications
+
+* [Polybar, a status bar for i3](https://github.com/jaagr/polybar)
+* [MpsYoutube, a terminal based program to Youtube](https://github.com/mps-youtube/mps-youtube)
 * [Gnirehtet, an application for reverse tethering for Android](https://github.com/Genymobile/gnirehtet)
+
+## Others
+* [Free Programming Books](https://github.com/EbookFoundation/free-programming-books)
 
 # Cool videos
 

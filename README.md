@@ -1,7 +1,8 @@
 # My links!
 
- * Conan, a Package Manager for C++ ([pt-br](conan-basic-ptbr.md), [en](conan-basic-en.md))
+ * Conan, a Package Manager for C++ ([pt-br](https://medium.com/@eirc.m/conan-o-gerenciador-de-pacotes-2bd4b2c9fc0d), [en](https://medium.com/@eirc.m/exploring-conan-21bcd355154))
 
+____
 # Cool links!
 
 Probably C++ related!
@@ -9,6 +10,8 @@ Probably C++ related!
 ## Graphics Computing
 
 * [Ambient occlusion for Minecraft-like worlds](https://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/)*
+* [Mesh Generation, a mixture of research groups](https://www.ics.uci.edu/~eppstein/gina/meshgen.html)
+* [A simple mesh generator, in MATLAB](https://popersson.github.io/distmesh/)
 
 ## Package Management
 
@@ -19,6 +22,8 @@ Probably C++ related!
 ## EMACS!
 
 * [Emacs Mini Manual](http://tuhdo.github.io/index.html)
+* [Spacemacs, a community-driven Emacs distro](https://github.com/syl20bnr/spacemacs)
+* [Doom, an Emacs configuration](https://github.com/hlissner/doom-emacs)
 
 ## Git Usage
 
@@ -27,6 +32,8 @@ Probably C++ related!
 ## C++ Language Specific
 
 * [Auto and decltype explained](http://thbecker.net/articles/auto_and_decltype/section_01.html)
+* [What are the basic rules for operator overloading.](https://stackoverflow.com/questions/4421706/what-are-the-basic-rules-and-idioms-for-operator-overloading)
+* [Wandbox, an online C++ compiler](https://wandbox.org/)
 
 ## Operating Systems
 
@@ -42,6 +49,7 @@ Probably C++ related!
 ## Others
 * [Free Programming Books](https://github.com/EbookFoundation/free-programming-books)
 
+___
 # Cool videos
 
 ## Package Management

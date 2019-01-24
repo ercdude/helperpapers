@@ -12,6 +12,8 @@ Probably C++ related!
 * [Ambient occlusion for Minecraft-like worlds](https://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/)*
 * [Mesh Generation, a mixture of research groups](https://www.ics.uci.edu/~eppstein/gina/meshgen.html)
 * [A simple mesh generator, in MATLAB](https://popersson.github.io/distmesh/)
+* [WarpCurves: A Tool for Explicit Manipulation of Implicit Surfaces](https://webhome.csc.uvic.ca/~graphics/msugihara/publications/WarpCurvesSMI10.pdf)
+* [Freestyle: Sculpting meshes with self-adaptive topology](https://hal.inria.fr/inria-00606516/document)
 
 ## Package Management
 

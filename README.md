@@ -14,6 +14,13 @@ Probably C++ related!
 * [A simple mesh generator, in MATLAB](https://popersson.github.io/distmesh/)
 * [WarpCurves: A Tool for Explicit Manipulation of Implicit Surfaces](https://webhome.csc.uvic.ca/~graphics/msugihara/publications/WarpCurvesSMI10.pdf)
 * [Freestyle: Sculpting meshes with self-adaptive topology](https://hal.inria.fr/inria-00606516/document)
+* [3D Rendering - wikipedia book](https://en.wikipedia.org/wiki/Book:3D_rendering)*
+
+## DRM
+
+* [Direct Rendering Manager](https://en.wikipedia.org/wiki/Direct_Rendering_Manager)
+* [FreeBSD drm-kmod, getting started](https://freebsddesktop.github.io/2018/12/08/drm-kmod-primer.html)
+* [How DRM and DRI work](https://www.bitwiz.org.uk/s/how-dri-and-drm-work.html)
 
 ## Package Management
 

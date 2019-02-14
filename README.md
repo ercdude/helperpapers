@@ -1,11 +1,16 @@
-# My links!
+# My papers
 
  * Conan, a Package Manager for C++ ([pt-br](https://medium.com/@eirc.m/conan-o-gerenciador-de-pacotes-2bd4b2c9fc0d), [en](https://medium.com/@eirc.m/exploring-conan-21bcd355154))
 
 ____
-# Cool links!
+# Some nice links
 
-Probably C++ related!
+## DRM FREE
+
+* [Project Gutenberg (ebooks)](https://www.gutenberg.org)
+* [OpenLibra (ebooks)](https://openlibra.com)
+* [Wikisource (ebooks)](https://en.wikisource.org)
+* [FCK-DRM](https://fckdrm.com)
 
 ## Graphics Computing
 
@@ -15,12 +20,15 @@ Probably C++ related!
 * [WarpCurves: A Tool for Explicit Manipulation of Implicit Surfaces](https://webhome.csc.uvic.ca/~graphics/msugihara/publications/WarpCurvesSMI10.pdf)
 * [Freestyle: Sculpting meshes with self-adaptive topology](https://hal.inria.fr/inria-00606516/document)
 * [3D Rendering - wikipedia book](https://en.wikipedia.org/wiki/Book:3D_rendering)*
+* [Piecewise Smooth Surface Reconstruction](http://hhoppe.com/psrecon.pdf)
+* [Curvature tensor Based Triangle Mesh Segmentation with Boundary Rectification](https://perso.liris.cnrs.fr/florent.dupont/publications/2004-CGI.pdf)
 
-## DRM
+## Graphics low-level
 
 * [Direct Rendering Manager](https://en.wikipedia.org/wiki/Direct_Rendering_Manager)
 * [FreeBSD drm-kmod, getting started](https://freebsddesktop.github.io/2018/12/08/drm-kmod-primer.html)
 * [How DRM and DRI work](https://www.bitwiz.org.uk/s/how-dri-and-drm-work.html)
+* [Xlib - C Language interface (incomplete)](https://en.wikisource.org/wiki/Xlib_-_C_Language_X_Interface)
 
 ## Package Management
 
@@ -59,7 +67,7 @@ Probably C++ related!
 * [Free Programming Books](https://github.com/EbookFoundation/free-programming-books)
 
 ___
-# Cool videos
+# Nice videos
 
 ## Package Management
 
@@ -80,4 +88,4 @@ ___
 * [Essence of linear algebra (playlist)](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)
 * [MIT - Linear Algebra with Gilbert Strang (playlist)](https://www.youtube.com/playlist?list=PL221E2BBF13BECF6C)
 
-> * Not checked, but seems awesome
+> \* Not checked, but seems awesome

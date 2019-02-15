@@ -78,6 +78,7 @@ ___
 ## Software maintenance
 
 * [Source Instrumentation for Monitoring C++](https://www.youtube.com/watch?v=0WgC5jnrRx8)
+* [Oh the humanity! - Kate Gregory talk about emotions at code](https://www.youtube.com/watch?v=p-b6CGvuWyA)
 
 ## Computer Science
 

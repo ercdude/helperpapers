@@ -74,6 +74,7 @@ ____
 
 ## Others
 * [Free Programming Books](https://github.com/EbookFoundation/free-programming-books)
+* [Basics of Windows shellcode writing](https://idafchev.github.io/exploit/2017/09/26/writing_windows_shellcode.html)
 
 ___
 # Nice videos

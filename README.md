@@ -22,6 +22,7 @@ ____
 * [3D Rendering - wikipedia book](https://en.wikipedia.org/wiki/Book:3D_rendering)*
 * [Piecewise Smooth Surface Reconstruction](http://hhoppe.com/psrecon.pdf)
 * [Curvature tensor Based Triangle Mesh Segmentation with Boundary Rectification](https://perso.liris.cnrs.fr/florent.dupont/publications/2004-CGI.pdf)
+* [GeoGebra, 3D Graphing (visualizer) and Calculator](https://www.geogebra.org/3d)
 
 ## Graphics low-level
 
@@ -50,7 +51,15 @@ ____
 
 * [Auto and decltype explained](http://thbecker.net/articles/auto_and_decltype/section_01.html)
 * [What are the basic rules for operator overloading.](https://stackoverflow.com/questions/4421706/what-are-the-basic-rules-and-idioms-for-operator-overloading)
+* [Arm Heap Exploration](https://azeria-labs.com/heap-exploitation-part-1-understanding-the-glibc-heap-implementation/)
+
+### Tools
+
 * [Wandbox, an online C++ compiler](https://wandbox.org/)
+* [clang-tidy, diagnosing and fixing programming errors](https://clang.llvm.org/extra/clang-tidy/)
+* [include-what-you-use, analyze #includes in C/C++ sources](https://include-what-you-use.org/)
+* [clazy, a compiler plugin to help with Qt semantics](https://github.com/KDE/clazy)
+* [cppinsights, see what you compiler does](https://cppinsights.io)
 
 ## Operating Systems
 
